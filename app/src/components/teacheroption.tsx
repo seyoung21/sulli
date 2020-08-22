@@ -1,0 +1,14 @@
+import React from "react";
+import { Flex, Text, Input, Link } from "@chakra-ui/core";
+
+const TeacherOption = () => {
+  return (
+    <Flex alignItems="center" justifyContent="center" flexDirection="column">
+      <Text my={10}>
+        Are you a teacher? Click {<Link href="teacher">here</Link>}
+      </Text>
+    </Flex>
+  );
+};
+
+export default TeacherOption;
