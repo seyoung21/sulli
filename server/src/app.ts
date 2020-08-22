@@ -45,6 +45,10 @@ io.on("connection", (socket: SocketIO.Socket) => {
       });
     });
   });
+
+  socket.on("get_room_count", (roomID: string) => {
+    socket.emit("room_count", socket.adapter.rooms[roomID].length);
+  });
 });
 
 server.listen(process.env.PORT || 8080, () => {

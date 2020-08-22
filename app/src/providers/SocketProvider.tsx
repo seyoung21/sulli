@@ -103,8 +103,26 @@ export const useSendStudentReaction = () => {
       room: string
     ) => {
       sock.emit("student_reaction", { reaction, room });
+      console.log("Sent");
     };
     return sendStudentReaction(context.socket);
+  } else {
+    throw new Error("SocketConnectionProvider was not found");
+  }
+};
+
+export const useRoomCount = () => {
+  const context = useContext(SocketConnectionContext);
+  if (context && context.socket) {
+    const getRoomCount = (sock: SocketIOClient.Socket) => (room: string) => {
+      return new Promise<number>((resolve, reject) => {
+        sock.emit("get_room_count", room);
+        sock.once("room_count", (count: number) => {
+          resolve(count);
+        });
+      });
+    };
+    return getRoomCount(context.socket);
   } else {
     throw new Error("SocketConnectionProvider was not found");
   }
