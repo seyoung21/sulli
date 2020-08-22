@@ -12,7 +12,7 @@ const StudentRoom: React.FC<IStudentRoom> = ({ path, roomID }) => {
   return (
     <Layout>
       <Heading>Room: {roomID}</Heading>
-      <StudentReactions />
+      <StudentReactions roomID={roomID || ""} />
     </Layout>
   );
 };

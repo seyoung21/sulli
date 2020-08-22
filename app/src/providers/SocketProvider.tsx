@@ -10,7 +10,7 @@ export interface ISocketConnectionProvider {
   children: React.ReactNode;
 }
 
-const SocketConnectionContext = React.createContext<
+export const SocketConnectionContext = React.createContext<
   Partial<ISocketConnectionContext>
 >({});
 
@@ -99,9 +99,10 @@ export const useSendStudentReaction = () => {
   const context = useContext(SocketConnectionContext);
   if (context && context.socket) {
     const sendStudentReaction = (sock: SocketIOClient.Socket) => (
-      reaction: string
+      reaction: string,
+      room: string
     ) => {
-      sock.emit("student_reaction", reaction);
+      sock.emit("student_reaction", { reaction, room });
     };
     return sendStudentReaction(context.socket);
   } else {

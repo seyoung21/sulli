@@ -2,6 +2,9 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import { nanoid } from "nanoid";
+import Datastore from "nedb";
+
+const db = new Datastore({ filename: "rooms.bin", autoload: true });
 
 const app = express();
 app.use(cors());
@@ -16,20 +19,31 @@ app.get("/", (req, res) => {
 io.on("connection", (socket: SocketIO.Socket) => {
   socket.on("create_room", () => {
     const classroom_id = nanoid(6);
+    const roomAdminID = socket.id;
     socket.join(classroom_id);
-    console.log(classroom_id);
-    socket.emit("create_room_success", classroom_id);
+    db.insert({ roomID: classroom_id, admin: roomAdminID }, (err, doc) => {
+      if (err) {
+        socket.emit("create_room_success", "none");
+        console.log(err);
+      } else {
+        socket.emit("create_room_success", classroom_id);
+      }
+    });
   });
 
   socket.on("join_room", (roomID: string) => {
     socket.join(roomID);
-    console.log("joined");
-    console.log(io.sockets.adapter.rooms[roomID].length);
     socket.emit("join_room_success");
   });
 
-  socket.on("student_reaction", (reaction: string) => {
-    console.log("Got reaction", reaction);
+  socket.on("student_reaction", ({ reaction, room }) => {
+    db.findOne({ roomID: room }, (err, doc) => {
+      const roomAdmin = doc.admin;
+      io.to(roomAdmin).emit("student_reaction_incoming", {
+        reaction,
+        sender: socket.id,
+      });
+    });
   });
 });
 
