@@ -34,6 +34,11 @@ io.on("connection", (socket: SocketIO.Socket) => {
   socket.on("join_room", (roomID: string) => {
     socket.join(roomID);
     socket.emit("join_room_success");
+    db.findOne({ roomID: roomID }, (err, doc) => {
+      const roomAdmin = doc.admin;
+      console.log(socket.adapter.rooms[roomID]);
+      io.to(roomAdmin).emit("student_list", socket.adapter.rooms[roomID]);
+    });
   });
 
   socket.on("student_reaction", ({ reaction, room }) => {
@@ -48,6 +53,16 @@ io.on("connection", (socket: SocketIO.Socket) => {
 
   socket.on("get_room_count", (roomID: string) => {
     socket.emit("room_count", socket.adapter.rooms[roomID].length);
+  });
+
+  socket.on("exit_room", (roomID: string) => {
+    db.findOne({ roomID: roomID }, (err, doc) => {
+      const roomAdmin = doc.admin;
+      console.log(socket.adapter.rooms[roomID]);
+      socket.leave(roomID, () => {
+        io.to(roomAdmin).emit("student_list", socket.adapter.rooms[roomID]);
+      });
+    });
   });
 });
 

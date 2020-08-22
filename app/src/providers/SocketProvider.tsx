@@ -128,4 +128,16 @@ export const useRoomCount = () => {
   }
 };
 
+export const useLeaveRoom = () => {
+  const context = useContext(SocketConnectionContext);
+  if (context && context.socket) {
+    const leaveRoom = (sock: SocketIOClient.Socket) => (room: string) => {
+      sock.emit("exit_room", room);
+    };
+    return leaveRoom(context.socket);
+  } else {
+    throw new Error("SocketConnectionProvider was not found");
+  }
+};
+
 export default SocketConnectionProvider;

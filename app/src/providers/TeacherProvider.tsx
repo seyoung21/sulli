@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { SocketConnectionContext } from "./SocketProvider";
 
 export interface IIncomingMessage {
@@ -6,10 +6,14 @@ export interface IIncomingMessage {
   sender: string;
 }
 
+export interface IStudentList {
+  sockets: { [id: string]: boolean };
+  length: number;
+}
+
 export interface ITeacherContext {
-  socket: SocketIOClient.Socket;
-  socketConnectionStatus: boolean;
   incomingMessageListener: (message: IIncomingMessage) => void;
+  students: IStudentList;
 }
 
 export interface ITeacherProvider {
@@ -24,6 +28,7 @@ const TeacherProvider: React.FC<ITeacherProvider> = ({
   incomingMessageListener,
 }) => {
   const socketContext = useContext(SocketConnectionContext);
+  const [students, setStudentsList] = useState<IStudentList>();
 
   if (socketContext && socketContext.socket) {
     socketContext.socket.on(
@@ -32,15 +37,23 @@ const TeacherProvider: React.FC<ITeacherProvider> = ({
         incomingMessageListener(message);
       }
     );
+
+    socketContext.socket.on("student_list", (data: IStudentList) => {
+      setStudentsList(data);
+    });
   }
 
   return (
-    <TeacherContext.Provider
-      value={{ socket: socketContext.socket, incomingMessageListener }}
-    >
+    <TeacherContext.Provider value={{ incomingMessageListener, students }}>
       {children}
     </TeacherContext.Provider>
   );
 };
 
+export const useStudentList = () => {
+  const context = useContext(TeacherContext);
+  if (context && context.students) {
+    return context.students;
+  }
+};
 export default TeacherProvider;

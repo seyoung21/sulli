@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../components/layout";
-import { Heading, Flex, Text, Box } from "@chakra-ui/core";
+import { Heading, Flex, Text, Box, Button } from "@chakra-ui/core";
 import StudentReactions from "../components/studentreactions";
-import { useRoomCount } from "../providers/SocketProvider";
+import { useRoomCount, useLeaveRoom } from "../providers/SocketProvider";
+import { navigate } from "@reach/router";
 
 export interface IStudentRoom {
   path: any;
@@ -11,8 +12,8 @@ export interface IStudentRoom {
 
 const StudentRoom: React.FC<IStudentRoom> = ({ path, roomID }) => {
   const getRoomCount = useRoomCount();
+  const leaveRoom = useLeaveRoom();
   const [roomCount, setRoomCount] = useState(0);
-
   const roomCountCallback = React.useCallback(async () => {
     if (roomID) {
       const count = await getRoomCount(roomID);
@@ -37,6 +38,18 @@ const StudentRoom: React.FC<IStudentRoom> = ({ path, roomID }) => {
         <Heading my={20}>How are you feeling?</Heading>
         <StudentReactions roomID={roomID || ""} />
       </Flex>
+      {roomID ? (
+        <Button
+          onClick={() => {
+            leaveRoom(roomID);
+            navigate("/");
+          }}
+        >
+          Leave
+        </Button>
+      ) : (
+        <></>
+      )}
     </Layout>
   );
 };

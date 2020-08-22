@@ -4,6 +4,7 @@ import { Heading } from "@chakra-ui/core";
 import TeacherProvider, {
   IIncomingMessage,
 } from "../providers/TeacherProvider";
+import TeacherRoomStats from "../components/teacherroomstats";
 
 export interface ITeacherRoom {
   path: any;
@@ -18,7 +19,7 @@ const TeacherRoom: React.FC<ITeacherRoom> = ({ path, roomID }) => {
   return (
     <Layout>
       <TeacherProvider incomingMessageListener={messageListener}>
-        <Heading>Room: {roomID}</Heading>
+        {roomID ? <TeacherRoomStats roomID={roomID} /> : <></>}
       </TeacherProvider>
     </Layout>
   );
