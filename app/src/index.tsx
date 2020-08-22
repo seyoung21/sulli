@@ -4,8 +4,9 @@ import App from "./App";
 import { ThemeProvider, CSSReset, ColorModeProvider } from "@chakra-ui/core";
 import { Router } from "@reach/router";
 import SocketConnectionProvider from "./providers/SocketProvider";
-import TeacherOption from "./components/teacheroption";
 import Teacher from "./pages/teacher";
+import TeacherRoom from "./pages/teacherRoom";
+import StudentRoom from "./pages/studentRoom";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -16,6 +17,8 @@ ReactDOM.render(
           <Router>
             <App path="/" />
             <Teacher path="teacher" />
+            <TeacherRoom path="teacher/:roomID" />
+            <StudentRoom path="student/:roomID" />
           </Router>
         </SocketConnectionProvider>
       </ColorModeProvider>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Flex, Text, Input, Link } from "@chakra-ui/core";
+import { Flex, Text, Link } from "@chakra-ui/core";
 
 const TeacherOption = () => {
   return (
