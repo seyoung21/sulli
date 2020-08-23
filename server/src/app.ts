@@ -10,7 +10,9 @@ const app = express();
 app.use(cors());
 
 const server = new http.Server(app);
-const io: SocketIO.Server = require("socket.io")(server);
+const io: SocketIO.Server = require("socket.io")(server, {
+  path: "/api/socket.io",
+});
 
 app.get("/", (req, res) => {
   res.send("OK");
