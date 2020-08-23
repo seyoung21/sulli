@@ -17,7 +17,7 @@ export const SocketConnectionContext = React.createContext<
 const SocketConnectionProvider: React.FC<ISocketConnectionProvider> = ({
   children,
 }) => {
-  const [localServerSocket] = useState(socket("http://localhost:8080"));
+  const [localServerSocket] = useState(socket("/", { path: "/api/socket.io" }));
   const [onlineStatus, setOnlineStatus] = useState(false);
 
   localServerSocket.on("connect_error", () => {
