@@ -11,9 +11,15 @@ export interface IStudentList {
   length: number;
 }
 
+export interface IStudentReaction {
+  socketID: string;
+  reaction: string;
+}
+
 export interface ITeacherContext {
   incomingMessageListener: (message: IIncomingMessage) => void;
   students: IStudentList;
+  studentReactions: IStudentReaction[];
 }
 
 export interface ITeacherProvider {
@@ -29,6 +35,9 @@ const TeacherProvider: React.FC<ITeacherProvider> = ({
 }) => {
   const socketContext = useContext(SocketConnectionContext);
   const [students, setStudentsList] = useState<IStudentList>();
+  const [studentReactions, setStudentReactions] = useState<IStudentReaction[]>(
+    []
+  );
 
   useEffect(() => {
     if (socketContext && socketContext.socket) {
@@ -36,6 +45,22 @@ const TeacherProvider: React.FC<ITeacherProvider> = ({
         "student_reaction_incoming",
         (message: IIncomingMessage) => {
           incomingMessageListener(message);
+          setStudentReactions((prevState) => {
+            const newState = [...prevState];
+            const idx = newState.findIndex(
+              (val) => val.socketID === message.sender
+            );
+            if (idx >= 0) {
+              console.log(idx, newState);
+              newState[idx].reaction = message.reaction;
+            } else {
+              newState.push({
+                socketID: message.sender,
+                reaction: message.reaction,
+              });
+            }
+            return newState;
+          });
         }
       );
 
@@ -50,7 +75,9 @@ const TeacherProvider: React.FC<ITeacherProvider> = ({
   }, [students]);
 
   return (
-    <TeacherContext.Provider value={{ incomingMessageListener, students }}>
+    <TeacherContext.Provider
+      value={{ incomingMessageListener, students, studentReactions }}
+    >
       {children}
     </TeacherContext.Provider>
   );
@@ -60,6 +87,13 @@ export const useStudentList = () => {
   const context = useContext(TeacherContext);
   if (context && context.students) {
     return context.students;
+  }
+};
+
+export const useStudentReactions = () => {
+  const context = useContext(TeacherContext);
+  if (context && context.studentReactions) {
+    return context.studentReactions;
   }
 };
 export default TeacherProvider;

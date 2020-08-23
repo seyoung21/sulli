@@ -6,6 +6,7 @@ import {
   InputGroup,
   InputRightElement,
   IconButton,
+  Heading,
 } from "@chakra-ui/core";
 import { useJoinClassRoom } from "../providers/SocketProvider";
 import { navigate } from "@reach/router";
@@ -29,25 +30,29 @@ const ClassRoomKey = () => {
       flexDirection="column"
       h={["xs", "sm", "md", "md", "md"]}
     >
-      <Text my={10}>Enter Classroom Code</Text>
-      <InputGroup>
-        <Input
-          placeholder="XXXXX"
-          mx={10}
-          textAlign="center"
-          maxW="md"
-          onChange={(event: any) => setClassroomID(event.target.value)}
-        />
-        <InputRightElement>
-          <IconButton
-            icon="chevron-right"
-            aria-label="next"
-            onClick={() => {
-              joinRoomWithPin(classRoomID);
-            }}
+      <Heading w="100%" textAlign="center" my={10}>
+        Enter Classroom Code
+      </Heading>
+      <Flex justifyContent="center" alignItems="center" w="100%">
+        <InputGroup maxW="md" m="auto">
+          <Input
+            placeholder="XXXXX"
+            fontWeight="bold"
+            textAlign="center"
+            px={10}
+            onChange={(event: any) => setClassroomID(event.target.value)}
           />
-        </InputRightElement>
-      </InputGroup>
+          <InputRightElement>
+            <IconButton
+              icon="chevron-right"
+              aria-label="next"
+              onClick={() => {
+                joinRoomWithPin(classRoomID);
+              }}
+            />
+          </InputRightElement>
+        </InputGroup>
+      </Flex>
     </Flex>
   );
 };

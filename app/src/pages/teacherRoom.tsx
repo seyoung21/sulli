@@ -5,6 +5,7 @@ import TeacherProvider, {
   IIncomingMessage,
 } from "../providers/TeacherProvider";
 import TeacherRoomStats from "../components/teacherroomstats";
+import TeacherClassView from "../components/teacherclassview";
 
 export interface ITeacherRoom {
   path: any;
@@ -20,6 +21,7 @@ const TeacherRoom: React.FC<ITeacherRoom> = ({ path, roomID }) => {
     <Layout>
       <TeacherProvider incomingMessageListener={messageListener}>
         {roomID ? <TeacherRoomStats roomID={roomID} /> : <></>}
+        <TeacherClassView />
       </TeacherProvider>
     </Layout>
   );

@@ -11,23 +11,15 @@ export interface IStudentRoom {
 }
 
 const StudentRoom: React.FC<IStudentRoom> = ({ path, roomID }) => {
-  const getRoomCount = useRoomCount();
   const leaveRoom = useLeaveRoom();
-  const [roomCount, setRoomCount] = useState(0);
-  const roomCountCallback = React.useCallback(async () => {
-    if (roomID) {
-      const count = await getRoomCount(roomID);
-      setRoomCount(count);
-    }
-  }, [getRoomCount]);
 
   return (
     <Layout>
-      <Box>
-        <Text>Room Name: Room</Text>
-        <Text>Room Code: {roomID}</Text>
-        <Text onClick={roomCountCallback}>Room Participants: {roomCount}</Text>
-      </Box>
+      <Flex justifyContent="right" width="100%">
+        <Text fontSize="3xl" fontWeight={900} color="gray.400">
+          {roomID}
+        </Text>
+      </Flex>
       <Flex
         h={["xs", "sm", "md", "md", "md"]}
         alignItems="center"
@@ -38,18 +30,25 @@ const StudentRoom: React.FC<IStudentRoom> = ({ path, roomID }) => {
         <Heading my={20}>How are you feeling?</Heading>
         <StudentReactions roomID={roomID || ""} />
       </Flex>
-      {roomID ? (
-        <Button
-          onClick={() => {
-            leaveRoom(roomID);
-            navigate("/");
-          }}
-        >
-          Leave
-        </Button>
-      ) : (
-        <></>
-      )}
+      <Flex w="100%" justifyContent="right">
+        {roomID ? (
+          <Button
+            my={10}
+            p={6}
+            bg="red.500"
+            borderRadius={10}
+            _hover={{ backgroundColor: "red.400" }}
+            onClick={() => {
+              leaveRoom(roomID);
+              navigate("/");
+            }}
+          >
+            Leave
+          </Button>
+        ) : (
+          <></>
+        )}
+      </Flex>
     </Layout>
   );
 };

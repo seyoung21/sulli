@@ -5,7 +5,12 @@ const TeacherOption = () => {
   return (
     <Flex alignItems="center" justifyContent="center" flexDirection="column">
       <Text my={10}>
-        Are you a teacher? Click {<Link href="teacher">here</Link>}
+        Are you a teacher? Click{" "}
+        {
+          <Link href="teacher" color="yellow.400">
+            here
+          </Link>
+        }
       </Text>
     </Flex>
   );
