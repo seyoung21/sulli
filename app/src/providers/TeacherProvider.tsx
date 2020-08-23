@@ -30,7 +30,12 @@ const TeacherProvider: React.FC<ITeacherProvider> = ({
   const socketContext = useContext(SocketConnectionContext);
   const [students, setStudentsList] = useState<IStudentList>();
 
-  if (socketContext && socketContext.socket) {
+  if (
+    socketContext &&
+    socketContext.socket &&
+    !socketContext.socket.hasListeners("student_reaction_incoming") &&
+    !socketContext.socket.hasListeners("student_list")
+  ) {
     socketContext.socket.on(
       "student_reaction_incoming",
       (message: IIncomingMessage) => {
