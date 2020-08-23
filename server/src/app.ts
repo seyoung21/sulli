@@ -35,10 +35,12 @@ io.on("connection", (socket: SocketIO.Socket) => {
 
   socket.on("join_room", (roomID: string) => {
     socket.join(roomID);
+    console.log(`Added user: ${socket.id} to room: ${roomID}`);
     socket.emit("join_room_success");
     db.findOne({ roomID: roomID }, (err, doc) => {
       const roomAdmin = doc.admin;
       io.to(roomAdmin).emit("student_list", socket.adapter.rooms[roomID]);
+      console.log(`Emitted student list to admin: ${roomAdmin}`);
     });
   });
 
@@ -63,10 +65,12 @@ io.on("connection", (socket: SocketIO.Socket) => {
   });
 
   socket.on("exit_room", (roomID: string) => {
+    console.log(`User: ${socket.id} is leaving the room: ${roomID}`);
     db.findOne({ roomID: roomID }, (err, doc) => {
       const roomAdmin = doc.admin;
       socket.leave(roomID, () => {
         io.to(roomAdmin).emit("student_list", socket.adapter.rooms[roomID]);
+        console.log(`Sent updated student list to room admin: ${roomAdmin}`);
       });
     });
   });
