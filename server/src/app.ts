@@ -14,7 +14,7 @@ const io: SocketIO.Server = require("socket.io")(server, {
   path: "/api/socket.io",
 });
 
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.send("OK");
 });
 
@@ -23,12 +23,16 @@ io.on("connection", (socket: SocketIO.Socket) => {
     const classroom_id = nanoid(6);
     const roomAdminID = socket.id;
     socket.join(classroom_id);
+    console.log(
+      `Added admin user: ${roomAdminID} with socket: ${socket.id} and started room ${classroom_id}`
+    );
     db.insert({ roomID: classroom_id, admin: roomAdminID }, (err, doc) => {
       if (err) {
         socket.emit("create_room_success", "none");
         console.log(err);
       } else {
         socket.emit("create_room_success", classroom_id);
+        console.log(`Emitted join success id to admin user ${socket.id}`);
       }
     });
   });

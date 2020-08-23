@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { SocketConnectionContext } from "./SocketProvider";
 
 export interface IIncomingMessage {
@@ -30,23 +30,24 @@ const TeacherProvider: React.FC<ITeacherProvider> = ({
   const socketContext = useContext(SocketConnectionContext);
   const [students, setStudentsList] = useState<IStudentList>();
 
-  if (
-    socketContext &&
-    socketContext.socket &&
-    !socketContext.socket.hasListeners("student_reaction_incoming") &&
-    !socketContext.socket.hasListeners("student_list")
-  ) {
-    socketContext.socket.on(
-      "student_reaction_incoming",
-      (message: IIncomingMessage) => {
-        incomingMessageListener(message);
-      }
-    );
+  useEffect(() => {
+    if (socketContext && socketContext.socket) {
+      socketContext.socket.on(
+        "student_reaction_incoming",
+        (message: IIncomingMessage) => {
+          incomingMessageListener(message);
+        }
+      );
 
-    socketContext.socket.on("student_list", (data: IStudentList) => {
-      setStudentsList(data);
-    });
-  }
+      socketContext.socket.on("student_list", (data: IStudentList) => {
+        setStudentsList(data);
+      });
+    }
+  }, [socketContext]);
+
+  useEffect(() => {
+    console.log(students);
+  }, [students]);
 
   return (
     <TeacherContext.Provider value={{ incomingMessageListener, students }}>

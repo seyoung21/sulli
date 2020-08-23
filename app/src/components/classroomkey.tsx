@@ -14,9 +14,9 @@ const ClassRoomKey = () => {
   const joinRoom = useJoinClassRoom();
   const [classRoomID, setClassroomID] = useState<string>("");
 
-  const joinRoomWithPin = (roomID: string) => {
+  const joinRoomWithPin = async (roomID: string) => {
     console.log("Joining room", roomID);
-    const status = joinRoom({ roomID });
+    const status = await joinRoom({ roomID });
     if (status) {
       navigate(`student/${roomID}`);
     }
