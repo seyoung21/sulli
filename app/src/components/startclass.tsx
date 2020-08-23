@@ -8,10 +8,10 @@ const StartClass = () => {
   const [isLoading, setLoading] = useState(false);
   const [roomName, setRoomName] = useState("");
 
-  const startClassroom = async () => {
+  const startClassroom = async (roomName: string) => {
     console.log("Starting classroom");
     setLoading(true);
-    const classroomID = await createClassRoom();
+    const classroomID = await createClassRoom({ roomName });
     setLoading(false);
     navigate(`teacher/${classroomID}`);
   };
@@ -35,7 +35,7 @@ const StartClass = () => {
       <Button
         isDisabled={isLoading || roomName.length === 0}
         isLoading={isLoading}
-        onClick={startClassroom}
+        onClick={() => startClassroom(roomName)}
         maxW="md"
         w="100%"
         variant={roomName.length ? "solid" : "outline"}

@@ -10,6 +10,10 @@ export interface ISocketConnectionProvider {
   children: React.ReactNode;
 }
 
+export interface IcreateClassRoom {
+  roomName: string;
+}
+
 export const SocketConnectionContext = React.createContext<
   Partial<ISocketConnectionContext>
 >({});
@@ -52,9 +56,11 @@ export const useSocketConnectionStatus = () => {
 export const useNewClassroom = () => {
   const context = useContext(SocketConnectionContext);
   if (context && context.socket) {
-    const createClassRoom = (sock: SocketIOClient.Socket) => () => {
+    const createClassRoom = (sock: SocketIOClient.Socket) => ({
+      roomName,
+    }: IcreateClassRoom) => {
       const classroomID = new Promise<string>((resolve, reject) => {
-        sock.emit("create_room");
+        sock.emit("create_room", roomName);
         sock.once("create_room_success", (id: any) => {
           resolve(id);
         });
@@ -123,6 +129,23 @@ export const useRoomCount = () => {
       });
     };
     return getRoomCount(context.socket);
+  } else {
+    throw new Error("SocketConnectionProvider was not found");
+  }
+};
+
+export const useRoomName = () => {
+  const context = useContext(SocketConnectionContext);
+  if (context && context.socket) {
+    const getRoomName = (sock: SocketIOClient.Socket) => (room: string) => {
+      return new Promise<string>((resolve, reject) => {
+        sock.emit("get_room_name", room);
+        sock.once("room_name", (roomName: string) => {
+          resolve(roomName);
+        });
+      });
+    };
+    return getRoomName(context.socket);
   } else {
     throw new Error("SocketConnectionProvider was not found");
   }

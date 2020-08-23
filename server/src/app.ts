@@ -19,19 +19,19 @@ app.get("/api", (req, res) => {
 });
 
 io.on("connection", (socket: SocketIO.Socket) => {
-  socket.on("create_room", () => {
-    const classroom_id = nanoid(6);
+  socket.on("create_room", (roomName) => {
+    const roomID = nanoid(6);
     const roomAdminID = socket.id;
-    socket.join(classroom_id);
+    socket.join(roomID);
     console.log(
-      `Added admin user: ${roomAdminID} with socket: ${socket.id} and started room ${classroom_id}`
+      `Added admin user: ${roomAdminID} with socket: ${socket.id} and started room ${roomID}`
     );
-    db.insert({ roomID: classroom_id, admin: roomAdminID }, (err, doc) => {
+    db.insert({ roomID, admin: roomAdminID, roomName }, (err, doc) => {
       if (err) {
         socket.emit("create_room_success", "none");
         console.log(err);
       } else {
-        socket.emit("create_room_success", classroom_id);
+        socket.emit("create_room_success", roomID);
         console.log(`Emitted join success id to admin user ${socket.id}`);
       }
     });
@@ -66,6 +66,13 @@ io.on("connection", (socket: SocketIO.Socket) => {
 
   socket.on("get_room_count", (roomID: string) => {
     socket.emit("room_count", socket.adapter.rooms[roomID].length);
+  });
+
+  socket.on("get_room_name", (roomID: string) => {
+    db.findOne({ roomID: roomID }, (err, doc) => {
+      const roomName = doc.roomName;
+      socket.emit("room_name", roomName);
+    });
   });
 
   socket.on("exit_room", (roomID: string) => {

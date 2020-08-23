@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Layout from "../components/layout";
 import { Heading, Flex, Text, Box, Button } from "@chakra-ui/core";
 import StudentReactions from "../components/studentreactions";
-import { useRoomCount, useLeaveRoom } from "../providers/SocketProvider";
+import { useLeaveRoom, useRoomName } from "../providers/SocketProvider";
 import { navigate } from "@reach/router";
 
 export interface IStudentRoom {
@@ -12,14 +12,46 @@ export interface IStudentRoom {
 
 const StudentRoom: React.FC<IStudentRoom> = ({ path, roomID }) => {
   const leaveRoom = useLeaveRoom();
+  const getRoomName = useRoomName();
+
+  const [isLoading, setLoading] = useState(false);
+  const [roomName, setRoomName] = useState("");
+
+  const resolveRoomName = React.useCallback(async () => {
+    if (roomID) {
+      setLoading(true);
+      const name = await getRoomName(roomID);
+      console.log(name);
+      setRoomName(name);
+      setLoading(false);
+    }
+  }, [setLoading]);
+
+  useEffect(() => {
+    resolveRoomName();
+  }, []);
 
   return (
     <Layout>
-      <Flex justifyContent="right" width="100%">
-        <Text fontSize="3xl" fontWeight={900} color="gray.400">
-          {roomID}
-        </Text>
-      </Flex>
+      {isLoading ? (
+        <Flex justifyContent="space-between" width="100%">
+          <Text fontSize="3xl" fontWeight={900} color="gray.400">
+            Loading...
+          </Text>
+          <Text fontSize="3xl" fontWeight={900} color="gray.400">
+            {roomID}
+          </Text>
+        </Flex>
+      ) : (
+        <Flex justifyContent="space-between" width="100%">
+          <Text fontSize="3xl" fontWeight={900}>
+            {roomName}
+          </Text>
+          <Text fontSize="3xl" fontWeight={900} color="gray.400">
+            {roomID}
+          </Text>
+        </Flex>
+      )}
       <Flex
         h={["xs", "sm", "md", "md", "md"]}
         alignItems="center"
@@ -36,6 +68,7 @@ const StudentRoom: React.FC<IStudentRoom> = ({ path, roomID }) => {
             my={10}
             p={6}
             bg="red.500"
+            color="white"
             borderRadius={10}
             _hover={{ backgroundColor: "red.400" }}
             onClick={() => {
