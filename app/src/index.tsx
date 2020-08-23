@@ -28,15 +28,17 @@ const customTheme = {
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={customTheme}>
-      <CSSReset />
-      <SocketConnectionProvider>
-        <Router>
-          <App path="/" />
-          <Teacher path="teacher" />
-          <TeacherRoom path="teacher/:roomID" />
-          <StudentRoom path="student/:roomID" />
-        </Router>
-      </SocketConnectionProvider>
+      <ColorModeProvider>
+        <CSSReset />
+        <SocketConnectionProvider>
+          <Router>
+            <App path="/" />
+            <Teacher path="teacher" />
+            <TeacherRoom path="teacher/:roomID" />
+            <StudentRoom path="student/:roomID" />
+          </Router>
+        </SocketConnectionProvider>
+      </ColorModeProvider>
     </ThemeProvider>
   </React.StrictMode>,
   document.getElementById("root")
